@@ -67,7 +67,7 @@ type Filter = {
   <T>(array: T[], f: (item: T) => boolean): T[]
 }
 type Filter = <T>(array: T[], f: (item: T) => boolean): T[]
-let filter: Filter = // ...
+let filter: Filter = ([1,2,3], ...) => ... // T는 number
 ```
 - T의 범위를 모든 시그니처로 한정한 호출 시그니처. T를 Filter 타입의 일부로 선언했으므로 타입스크립트는 Filter 타입의 함수를 선언할 때 T를 한정한다.
 ```typescript
@@ -75,7 +75,7 @@ type Filter<T> = {
   (array: T[], f: (item: T) => boolean): T[]
 }
 type Filter<T> = (array: T[], f: (item: T) => boolean): T[]
-let filter: Filter<string> = // ...
+let filter: Filter<string> = // ... T는 string
 ```
 - T를 시그니처로 범위로 한정한, 이름을 갖는 함수 호출 시그니처. filter를 호출할 때 T를 타입으로 한정하므로 각 filter 호출은 자신만의 T 한정 값을 갖는다.
 ```typescript
@@ -102,7 +102,7 @@ map(['a', 'b', 'c'], x => x === 'a')
 // T 타입의 배열, U 타입을 반환하는 함수
 ```
  제네릭은 명식적으로 지정할 수 있다. 제네릭의 타입을 명시할 때는 모든 필요한 제네릭 타입을 명시하거나 반대로 아무것도 명시해서는 안된다.
- 대부분의 상황에서 타입스크리브는 제네릭 타입 추론을 잘해준다.
+ 대부분의 상황에서 타입스크립트는 제네릭 타입 추론을 잘해준다.
 ```typescript
 map<string, boolean>( ['a','b','c'], x => x === 'a')
 
