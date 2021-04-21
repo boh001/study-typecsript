@@ -67,7 +67,7 @@ type Filter = {
   <T>(array: T[], f: (item: T) => boolean): T[]
 }
 type Filter = <T>(array: T[], f: (item: T) => boolean): T[]
-let filter: Filter = ([1,2,3], ...) => ... // T는 number
+let filter: Filter = ([1,2,3], ...) // T는 number
 ```
 - T의 범위를 모든 시그니처로 한정한 호출 시그니처. T를 Filter 타입의 일부로 선언했으므로 타입스크립트는 Filter 타입의 함수를 선언할 때 T를 한정한다.
 ```typescript
