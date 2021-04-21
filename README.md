@@ -55,6 +55,7 @@ type Filter = {
 // 일반적으로 타입 이름은 대문자 T를 시작으로 U,V,W 순으로 필요한 만큼 사용한다.
 ```
 타입 별칭, 클래스, 인터페이스에서도 제네릭 타입을 사용할 수 있다.
+
 <br/>
 <br/>
 
@@ -148,5 +149,96 @@ type TimedEvent<T> = {
 
 function triggerEvent<T>(event: MyEvent<T>): void {
   // ...
+}
+```
+<br/>
+<br/>
+
+## 한정된 다형성
+U 타입은 적어도 T 타입을 포함하는 관계를 U가 T의 <strong>상한한계</strong>라고 설명한다.
+```typescript
+type TreeNode = {
+  value: string
+}
+let a: TreeNode = { value: 'a' }
+
+type LeafNode = TreeNode & {
+  isLeaf: true
+}
+let b: LeafNode = { value: 'b', isLeaf: true }
+
+type InnerNode = TreeNoe & {
+  children: [TreeNode] | [TreeNode, TreeNode]
+}
+let c: InnerNode = { value: 'c', children: [b] }
+```
+예시
+- T는 TreeNode이거나 아니면 TreeNode의 서브타입이다.
+- T 타입은 extends TreeNode라고 했으므로 TreeNode가 아닌 다른 것을 전달하면 오류가 나타난다. node는 TreeNode이거나 TreeNode의 서브타입이어야 한다.
+- extends TreeNode를 생략하고 T 타입만을 선언하면 node.value를 읽는 행위가 안전하지 않아서 컴파일 타입 에러를 던진다.
+```typescript
+function mapNode<T extends TreeNode> (
+  node: T,
+  f: (value: string) => string
+): T {
+  return {
+    ...node,
+    value: f(node.value)
+  }
+}
+```
+타입 제한을 여러개 추가하려면 인터섹션을 여러개 사용하면 된다.
+```typescript
+type HasSides = { numberOfSides: number }
+type SidesHaveLength = { sideLength: number }
+
+function logPerimeter<
+  Shape extends HasSides & SidesHaveLength
+>(s: Shape): Shape {
+  return s.numberOfSides * s.sideLength
+}
+```
+가변 인수 함수에서도 한정된 다형성을 사용할 수 있다.
+- call은 가변 인수 함수로 T와 R 타입 매개변수를 받는다. T는 unknown[]의 서브타입으로 어떤 타입의 배열 혹은 튜플이다.
+- f 또한 가변 인수 함수로 args와 같은 타입의 인수를 받는다. args 타입이 무엇이든지 f도 똑같은 타입의 args를 받는다.
+- args 타입은 T이며 T는 배열 타입이고 타입스크립트는 args 용으로 전달한 인수를 보고 T에 알맞은 튜플타입을 추론한다.
+```typescript
+function call<T extends unknown[], R>(f: (...args: T) => R, ...args: T): R {
+  return f(...args)
+}
+function fill(length: number , value: string): string[] {
+  return Array.from({length}, () => value)
+}
+let a = call(fill, 10 ,'a') // T는 [number, string]
+let b = call(fill, 10) // 에러 2개의 인수가 필요함
+```
+<br/>
+<br/>
+
+## 제네릭 타입 기본값
+함수 매개변수에 기본값을 설정하듯이 제네릭타입 매개변수에도 기본값을 넣을 수 있다.
+```typescript
+type MyEvent<T = HTMLElement> = {
+  target: T
+  type: string
+}
+
+type MyEventM<T extends HTMLElement = HTMLElement> = {
+  target: T
+  type: string
+}
+let myEvent: MyEvent = {
+  target: myElement,
+  type: string
+}
+```
+함수의 선태적 매개변수처럼 기본 타입을 갖는 제네릭은 반드시 기본 타입을 갖지 않는 제네릭 뒤에 위치해야한다.
+```typescript
+type MyEvent2<
+  Type extends string,
+  Target extends HTMLElement = HTMLElement,
+> = {
+  target: Target
+  type: Type
 }
 ```
