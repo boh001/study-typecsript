@@ -156,6 +156,7 @@ function triggerEvent<T>(event: MyEvent<T>): void {
 <br/>
 
 ## 한정된 다형성
+적어도 특정 타입을 포함하는 타입을 만들고 싶을 때는 & 기호를 이용해서 만들 수 있다.
 U 타입은 적어도 T 타입을 포함하는 관계를 U가 T의 <strong>상한한계</strong>라고 설명한다.
 ```typescript
 type TreeNode = {
